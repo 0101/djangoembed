@@ -1,9 +1,10 @@
+import json as simplejson
+
 from django import VERSION
 from django.conf import settings
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.utils import simplejson
 
 from oembed.constants import RESOURCE_CHOICES
 from oembed.providers import HTTPProvider
@@ -39,7 +40,7 @@ class StoredOEmbed(models.Model):
 
     def __unicode__(self):
         return self.match
-    
+
     @property
     def response(self):
         return simplejson.loads(self.response_json)
@@ -87,7 +88,7 @@ class AggregateMediaDescriptor(property):
     def contribute_to_class(self, cls, name):
         self.name = name
         setattr(cls, self.name, self)
-        
+
     def __get__(self, instance, cls=None):
         if instance.content_object:
             return instance.content_object
@@ -115,12 +116,12 @@ class AggregateMedia(models.Model):
     content_type = models.ForeignKey(ContentType, blank=True, null=True,
             related_name="aggregate_media")
     content_object = GenericForeignKey()
-    
+
     media = AggregateMediaDescriptor()
-    
+
     def __unicode__(self):
         return self.url
-    
+
     def get_absolute_url(self):
         if self.content_object and hasattr(self.content_object, 'get_absolute_url'):
             return self.content_object.get_absolute_url()
